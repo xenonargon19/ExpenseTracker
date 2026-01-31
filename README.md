@@ -71,6 +71,7 @@ No duplicated counters. No cached balances.
 
 ## Project Structure
 
+```
 expense-tracker/
 ├── app.py              # Flask routes
 ├── main.py             # App entry point
@@ -86,8 +87,8 @@ expense-tracker/
 │   ├── transactions.html
 │   └── achievements.html
 ├── static/
-├── data.db
-
+├── data.db              # (ignored, created at runtime)
+```
 ---
 
 ## Running the App
