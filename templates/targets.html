@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <h1>Targets</h1>
+
+  <div style="display: flex; gap: 8px; align-items: center;">
+    {% if not editing %}
+      <a href="/targets/edit">
+        <button>Edit Weights</button>
+      </a>
+
+      <form method="post" action="/targets/clear"
+            onsubmit="return confirm('Clear all targets? This cannot be undone.')">
+        <button style="background:#eee;color:#900;">
+          Clear All
+        </button>
+      </form>
+    {% else %}
+      <button type="submit" form="save-weights-form">Save</button>
+      <a href="/targets/cancel-edit">
+        <button type="button">Cancel</button>
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+
+<form id="save-weights-form" method="post" action="/targets/save-weights">
+</form>
+
+{% if editing %}
+  <p style="font-size: 0.85em; color: #666; margin-top: 6px;">
+    Weights do not need to sum to 100 while editing.
+    <br>
+    <strong>They will be normalized when you click Save.</strong>
+  </p>
+{% endif %}
+
+
+
+<p><strong>Total Saved:</strong> ${{ total_saved }}</p>
+
+{% if targets %}
+  {% for t in targets %}
+    <div style="
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    ">
+
+      <!-- Priority index -->
+      <div style="width: 28px; font-weight: bold;">
+        {{ loop.index }}.
+      </div>
+
+      <!-- Main info -->
+      <div style="flex: 1;">
+        <div style="font-weight: bold;">
+          {{ t.name }}
+        </div>
+
+        <div style="font-size: 0.9em; color: #666;">
+          ${{ t.allocated }} / ${{ t.price }}
+        </div>
+
+        <progress
+          value="{{ t.progress }}"
+          max="100"
+          style="width: 160px; height: 12px;"
+        ></progress>
+
+        {% if t.progress == 100 %}
+          <form method="post" action="/targets/purchase" style="margin-top: 6px;">
+            <input type="hidden" name="target_id" value="{{ t.id }}">
+            <button type="submit">Purchase</button>
+          </form>
+        {% endif %}
+      </div>
+
+      <!-- Right side: percentage editor -->
+      <div style="text-align: right; min-width: 100px;">
+        {% if editing %}
+          <input
+            type="number"
+            name="weights[{{ t.id }}]"
+            value="{{ t.weight }}"
+            step="1"
+            min="0"
+            style="width: 60px;"
+            form="save-weights-form"
+          >
+        {% else %}
+          <strong>{{ t.display_weight_pct }}%</strong>
+        {% endif %}
+      </div>
+
+
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No targets yet.</p>
+{% endif %}
+
+<hr>
+
+<h3>Add New Target</h3>
+
+<form method="post" action="/targets/add"
+      style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+
+  <input
+    type="text"
+    name="name"
+    placeholder="Item name"
+    required
+  >
+
+  <input
+    type="number"
+    step="0.01"
+    name="price"
+    placeholder="Price"
+    required
+  >
+
+  <!-- Priority mode -->
+  <select name="priority_mode" id="priority_mode">
+    <option value="default" selected>Default priority</option>
+    <option value="manual">Set priority manually</option>
+  </select>
+
+  <!-- Manual weight input (UI only for now) -->
+  <input
+    type="number"
+    name="weight"
+    id="manual_weight"
+    placeholder="Priority"
+    min="0"
+    style="width: 90px;"
+    disabled
+  >
+
+  <button type="submit">Add</button>
+</form>
+
+<script>
+  const modeSelect = document.getElementById("priority_mode");
+  const weightInput = document.getElementById("manual_weight");
+
+  modeSelect.addEventListener("change", () => {
+    if (modeSelect.value === "manual") {
+      weightInput.disabled = false;
+      weightInput.required = true;
+    } else {
+      weightInput.disabled = true;
+      weightInput.required = false;
+      weightInput.value = "";
+    }
+  });
+</script>
+
+
+{% endblock %}
+
+
+

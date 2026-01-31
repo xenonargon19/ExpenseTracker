@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Achievements</h1>
+
+<form method="post" action="/achievements/reset" style="margin-bottom: 16px;">
+  <button type="submit">
+    🔄 Reset Achievement Progress
+  </button>
+</form>
+
+
+<div class="achievement-grid">
+  {% for ach in achievements %}
+    {% set achieved = ach.key in achieved_keys %}
+
+    <div class="achievement-card {{ 'achieved' if achieved else 'locked' }}">
+      <div class="icon">🏆</div>
+      <h3>{{ ach.title }}</h3>
+      <p>{{ ach.description }}</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
+

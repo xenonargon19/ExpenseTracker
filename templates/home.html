@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Expense Tracker</h1>
+
+<div class="nav-grid">
+  <a class="nav-card" href="/targets">
+    🎯 Targets
+  </a>
+
+  <a class="nav-card" href="/transactions">
+    💸 Daily Expenses
+  </a>
+
+  <a class="nav-card" href="/achievements">
+    🏆 Achievements
+  </a>
+</div>
+
+{% if newly_unlocked %}
+<script>
+  {% for key in newly_unlocked %}
+    alert("🎉 Achievement unlocked: {{ key }}");
+  {% endfor %}
+</script>
+{% endif %}
+{% endblock %}
